@@ -1,0 +1,1 @@
+/Users/toyoshi/dotfiles/.vim

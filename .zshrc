@@ -1,5 +1,4 @@
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 # 補完機能
 autoload -U compinit
@@ -34,7 +33,69 @@ setopt list_packed
 # 補完候補表示時などにピッピとビープ音をならないように設定
 setopt nolistbeep
 
-# vimライクキーバインド設定
-bindkey -v
+## tmux自動起動
+# http://d.hatena.ne.jp/tyru/20100828/run_tmux_or_screen_at_shell_startup
+is_screen_running() {
+    # tscreen also uses this varariable.
+    [ ! -z "$WINDOW" ]
+}
+is_tmux_runnning() {
+    [ ! -z "$TMUX" ]
+}
+is_screen_or_tmux_running() {
+    is_screen_running || is_tmux_runnning
+}
+shell_has_started_interactively() {
+    [ ! -z "$PS1" ]
+}
+resolve_alias() {
+    cmd="$1"
+    while \
+        whence "$cmd" >/dev/null 2>/dev/null \
+        && [ "$(whence "$cmd")" != "$cmd" ]
+    do
+        cmd=$(whence "$cmd")
+    done
+    echo "$cmd"
+}
 
 
+if ! is_screen_or_tmux_running && shell_has_started_interactively; then
+    for cmd in tmux tscreen screen; do
+        if whence $cmd >/dev/null 2>/dev/null; then
+            $(resolve_alias "$cmd")
+            break
+        fi
+    done
+fi
+
+# nvm と指定されたバージョンの Node.js がインストール済みの場合だけ
+# 設定を有効にする
+if [[ -f ~/.nvm/nvm.sh ]]; then
+  source ~/.nvm/nvm.sh
+
+  if which nvm >/dev/null 2>&1 ;then
+    _nodejs_use_version="v0.9.7"
+    if nvm ls | grep -F -e "${_nodejs_use_version}" >/dev/null 2>&1 ;then
+      nvm use "${_nodejs_use_version}" >/dev/null
+      export NODE_PATH=${NVM_PATH}_modules${NODE_PATH:+:}${NODE_PATH}
+    fi
+    unset _nodejs_use_version
+  fi
+fi
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+
+setopt nonomatch
+
+#rbenv
+export PATH=$HOME/.rbenv/bin:$PATH
+eval "$(rbenv init - zsh)"
+export CC=/usr/bin/gcc-4.2
+
+#ruby bundleのためのエイリアス
+alias be='bundle exec'
+
+#sfinvoice publisher
+export SFPUBLISHER_DEV_USER=toyoshi

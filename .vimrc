@@ -1,8 +1,25 @@
-set nocompatible
+nnoremap <F5> :<C-u>edit $MYVIMRC<CR>
+nnoremap <F6> :<C-u>source $MYVIMRC<CR>
 
-set rtp+=~/.vim/vundle/ 
+set nocompatible
+set number
+set autoindent
+set shiftwidth=2
+set backupdir=/tmp
+
+" indent
+filetype on
+filetype indent on
+filetype plugin on
+
+syntax on
+
+"Bundler
+set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
+Bundle 'vim-jp/vimdoc-ja'
+Bundle 'gmarik/vundle'
 Bundle 'tpope/vim-rails'
 Bundle 'unite.vim'
 Bundle 'The-NERD-tree'
@@ -10,8 +27,10 @@ Bundle 'neocomplcache'
 Bundle 'kwbdi.vim'
 Bundle 'chrismetcalf/vim-yankring'
 Bundle 'thinca/vim-quickrun'
-Bundle 'mattn/gist-vim'
-Bundle 'mattn/webapi-vim'
+Bundle 'quickrun'
+Bundle 'ctrlp.vim'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'rhysd/clever-f.vim'
 
 
 "入力モード時、ステータスラインのカラーを変更
@@ -53,19 +72,19 @@ if !exists('g:neocomplcache_keyword_patterns')
     endif
     let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-" indent
-filetype on
-filetype indent on
-filetype plugin on
-
 let g:quickrun_config = {}
-let g:quickrun_config['ruby.rspec'] = {'command': 'rspec'}
+"let g:quickrun_config['ruby.rspec'] = {'command': 'rspec'}
 let g:quickrun_config['ruby.cucumber'] = {'command': 'cucumber'}
-augroup UjihisaRSpec
-	autocmd!
-	autocmd BufWinEnter,BufNewFile *_spec.rb set filetype=ruby.rspec
+let g:quickrun_config['ruby.rspec'] = {'command': 'rspec', 'cmdopt': "-l {line('.')}"}
+augroup RSpec
+  autocmd!
+  autocmd BufWinEnter,BufNewFile *_spec.rb set filetype=ruby.rspec
 augroup END
 
-set autoindent
-set shiftwidth=2
-
+" http://blog.remora.cx/2012/08/vim-easymotion.html
+" ホームポジションに近いキーを使う
+let g:EasyMotion_keys='hjklasdfgyuiopqwertnmzxcvbHJKLASDFGYUIOPQWERTNMZXCVB'
+" 「;」 + 何かにマッピング
+let g:EasyMotion_leader_key=";"
+" 1 ストローク選択を優先する
+let g:EasyMotion_grouping=1
